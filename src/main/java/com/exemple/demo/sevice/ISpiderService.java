@@ -21,7 +21,7 @@ public interface ISpiderService {
      * 获取导航栏总数量
      * @return Integer
      */
-    Integer navigationCount();
+    Integer navigationCount(String time1,String time2);
 
 
     /**

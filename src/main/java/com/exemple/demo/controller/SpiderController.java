@@ -27,33 +27,45 @@ import java.util.Map;
 public class SpiderController {
     private static Logger logger = LoggerFactory.getLogger(SpiderController.class);
 
+    private static String t1 ;
+    private static String t2 ;
+
     @Autowired
     private ISpiderService navigationService;
 
     /**
      * 分页获取导航栏列表
+     *
      * @param pageNo Integer, 分页
      * @return Result
      */
     @GetMapping("/list")
     public Result allNavigations(@RequestParam(value = "pageNo", required = false, defaultValue = "0") Integer pageNo,
-                                 @RequestParam(value = "time1", required = false, defaultValue = "1990-01-01") String time1,
-                                 @RequestParam(value = "time2", required = false, defaultValue = "2020-03-01") String time2) {
+                                 @RequestParam(value = "time1", required = false) String time1,
+                                 @RequestParam(value = "time2", required = false) String time2) {
+        if (pageNo==0){
+            if ( time1 == null || time1.equals(""))  {
+                t1 = SqlParam.time1;
+                t2 = SqlParam.time2;
+
+            } else {
+                t1 = time1.replace('/', '-');
+                t2 = time2.replace('/', '-');
+            }
+        }
+
         Map<String, Object> resultMap = Maps.newHashMap();
-        resultMap.put("navigationCount", navigationService.navigationCount());
+        resultMap.put("navigationCount", navigationService.navigationCount(t1, t2));
         resultMap.put("pageNo", pageNo);
         resultMap.put("pageSize", SqlParam.PageSize);
-        time1 = time1.replace('/','-');
-        time2 = time2.replace('/','-');
-        resultMap.put("navigationList", navigationService.navigationList(pageNo,time1,time2));
+        resultMap.put("navigationList", navigationService.navigationList(pageNo, t1, t2));
         return new Result<>(ResultEnum.SUCCESS, resultMap);
     }
 
 
-
-
     /**
      * 删除导航栏
+     *
      * @param body String, 请求体, RequestParam不起作用
      * @return Result
      */

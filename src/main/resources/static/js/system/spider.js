@@ -8,12 +8,14 @@
         // fetch data
         var _nagvigationListContainer = $('#navigationListContainer');
         var _navigationList = {};
+        var time1 = $('#time1').value;
+        var time2 = $('#time2').value;
         function getNavigationList(obj, first) {
             if (first) return;
             _nagvigationListContainer.html('');
             var pageNo = obj.curr;
             _loading.showLoading();
-            $.get('/api/spider/list', {pageNo: pageNo - 1}, function (result) {
+            $.get('/api/spider/list', {pageNo: pageNo - 1, time1: time1, time2: time2}, function (result) {
                 _loading.hideLoading();
                 $('.layui-table').show();
                 var pageSize = 20, totalCount = 0;
@@ -39,7 +41,13 @@
                     _layer.msg(result.msg ? result.msg : '获取电影数据失败');
                 }
                 !first && setTimeout(function () {
-                    _pager.render({elem: 'pagination', count: totalCount, limit: pageSize, curr: pageNo, jump: getNavigationList});
+                    _pager.render({
+                        elem: 'pagination',
+                        count: totalCount,
+                        limit: pageSize,
+                        curr: pageNo,
+                        jump: getNavigationList
+                    });
                 }, 0);
             });
         }
@@ -102,6 +110,7 @@
             _btnAddNavigation.removeClass('layui-btn-disabled');
             _dialogIdx = false;
         }
+
         // edit navigation
         var _bodyEle = $('body');
         _bodyEle.on('click', '.btn_edit_navigation', function () {
@@ -153,4 +162,4 @@
         ],
         navigationListFunc
     );
-} ());
+}());

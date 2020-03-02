@@ -78,8 +78,8 @@ public class SpiderService implements ISpiderService {
      * @return Integer
      */
     @Override
-    public Integer navigationCount() {
-        return navigationMapper.navigationCount();
+    public Integer navigationCount(String time1,String time2) {
+        return navigationMapper.navigationCount(time1,time2);
     }
 
 

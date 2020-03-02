@@ -10,14 +10,14 @@ import java.util.List;
  * Created by Caby on 2017-06-01 3:13 PM.
  */
 public interface SpiderMapper {
-    @Select("SELECT * from movie2")
+    @Select("SELECT * from movie")
     List<Navigation> allNavigations();
 
-    @Select("SELECT * from movie2 where date>#{time1} and date <#{time2} LIMIT #{offset}, #{pageSize}")
+    @Select("SELECT * from movie where date>#{time1} and date <#{time2} order by date LIMIT #{offset}, #{pageSize}")
     List<Movie> navigationList(@Param("offset") Integer offset, @Param("pageSize") Integer pageSize, @Param("time1") String time1, @Param("time2") String time2);
 
-    @Select("SELECT COUNT(name) FROM movie2")
-    Integer navigationCount();
+    @Select("SELECT COUNT(name) FROM movie where date>#{time1} and date <#{time2}")
+    Integer navigationCount(@Param("time1") String time1,@Param("time2") String time2);
 
     @Select("SELECT n.id, n.`name`, n.`status`, n.ctime createTime, n.order_num orderNumber, GROUP_CONCAT(i.id) interfaceIds " +
             "FROM navigation n " +
@@ -38,6 +38,6 @@ public interface SpiderMapper {
     List<Navigation> navigationsShowInView(@Param("uid") Integer uid);
 
 
-    @Delete("DELETE FROM movie2 WHERE id = #{nid}")
+    @Delete("DELETE FROM movie WHERE id = #{nid}")
     void deleteNavigation(@Param("name") Integer nid);
 }

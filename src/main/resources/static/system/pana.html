@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <title>电影数据 - 数据列表</title>
+    <style>
+        .layui-table {
+            display: none;
+        }
+
+        #add_navigation_form_container {
+            padding: 20px;
+        }
+
+        #btn_add_navigation_container {
+            margin-top: 30px;
+            margin-bottom: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div id="page_header"></div>
+<div id="page_nav_left"></div>
+<div id="page_main_container">
+    <div id="main_container">
+
+        <div>
+            <input type="date" id="time1" value="">起始时间
+            <input type="date" id="time2" value="">终止时间
+            <button id="btn_search" class="layui-btn" onclick="navigationListFunc()">搜索</button>
+        </div>
+        <table class="layui-table">
+            <colgroup>
+                <col width="50">
+                <col width="50">
+                <col width="100">
+                <col width="150">
+                <col width="50">
+                <col width="80">
+                <col width="300">
+                <col width="30">
+                <!--                <col width="100">-->
+            </colgroup>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>电影名称</th>
+                <th>导演</th>
+                <th>编剧</th>
+                <th>类型</th>
+                <th>上映时间</th>
+                <th>简介</th>
+                <th>豆瓣url</th>
+                <!--                <th>操作</th>-->
+            </tr>
+            </thead>
+            <tbody id="navigationListContainer"></tbody>
+        </table>
+        <div id="pagination"></div>
+    </div>
+</div>
+<div id="page_footer"></div>
+<div id="add_navigation_html_container" style="display: none;">
+    <div id="add_navigation_form_container">
+    </div>
+</div>
+<script src="../layui/layui.js"></script>
+<script src="../js/config.js"></script>
+<!--<script src="../js/system/spider.js"></script>-->
+<script>
+
+    function navigationListFunc() {
+        var _utils = layui.commonUtils, _loading = layui.commonLoading, $ = layui.jquery, _layer = layui.layer,
+            _dateFormat = layui.dateFormat, _pager = layui.laypage, _form = layui.form;
+        // fetch data
+        var _nagvigationListContainer = $('#navigationListContainer');
+        var _navigationList = {};
+        var time1 = document.getElementById('time1').value;
+        var time2 = document.getElementById('time2').value;
+
+        function getNavigationList(obj, first) {
+            if (first) return;
+            _nagvigationListContainer.html('');
+            var pageNo = obj.curr;
+            var time1 = obj.time1;
+            var time2 = obj.time2;
+            _loading.showLoading();
+            $.get('/api/spider/list', {pageNo: pageNo - 1, time1: time1, time2: time2}, function (result) {
+                _loading.hideLoading();
+
+                $('.layui-table').show();
+                var pageSize = 20, totalCount = 0;
+                if (result.code == 0) {
+                    pageNo = result.content.pageNo + 1;
+                    pageSize = result.content.pageSize;
+                    totalCount = result.content.navigationCount;
+                    $.each(result.content.navigationList, function (idx, navigation) {
+                        var tr = $('<tr class="navigation_info_row" data-nid="' + navigation.id + '"></tr>');
+                        tr.append('<td>' + (idx + 1) + '</td>');
+                        tr.append('<td>' + navigation.name + '</td>');
+                        tr.append('<td>' + navigation.director + '</td>');
+                        tr.append('<td>' + navigation.write + '</td>');
+                        tr.append('<td>' + navigation.type + '</td>');
+                        tr.append('<td>' + navigation.date + '</td>');
+                        tr.append('<td>' + navigation.introdduction + '</td>');
+                        tr.append('<td>' + navigation.movieurl + '</td>');
+
+                        _nagvigationListContainer.append(tr);
+                        _navigationList[navigation.id] = navigation;
+                    });
+                } else {
+                    _layer.msg(result.msg ? result.msg : '获取电影数据失败');
+                }
+                !first && setTimeout(function () {
+                    _pager.render({
+                        elem: 'pagination',
+                        count: totalCount,
+                        limit: pageSize,
+                        curr: pageNo,
+                        jump: getNavigationList
+                    });
+                }, 0);
+            });
+        }
+
+
+        // do fetch data
+        getNavigationList({curr: 1, time1: time1, time2: time2});
+    }
+
+    layui.use(
+        [
+            'pageBuilder',
+            'commonUtils',
+            'commonLoading',
+            'jquery',
+            'layer',
+            'dateFormat',
+            'laypage',
+            'form'
+        ],
+        navigationListFunc
+    );
+</script>
+</body>
+
+</html>
+

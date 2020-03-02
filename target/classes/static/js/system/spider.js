@@ -2,55 +2,55 @@
  * Created by Caby on 6/3/17.
  */
 ;(function () {
-        function navigationListFunc() {
-                var _utils = layui.commonUtils, _loading = layui.commonLoading, $ = layui.jquery, _layer = layui.layer,
-                    _dateFormat = layui.dateFormat, _pager = layui.laypage, _form = layui.form;
-                // fetch data
-                var _nagvigationListContainer = $('#navigationListContainer');
-                var _time1 = $('#time1').value;
-                var _time2 = $('#time2').value;
-                var _navigationList = {};
-                function getNavigationList(obj, first) {
-                    if (first) return;
-                    _nagvigationListContainer.html('');
-                    var pageNo = obj.curr;
-                    _loading.showLoading();
-                    $.get('/api/spider/list', {pageNo: pageNo - 1, time1:_time1, time2:_time2}, function (result) {
-                        _loading.hideLoading();
-                        $('.layui-table').show();
-                        var pageSize = 20, totalCount = 0;
-                        if (result.code == 0) {
+    function navigationListFunc() {
+        var _utils = layui.commonUtils, _loading = layui.commonLoading, $ = layui.jquery, _layer = layui.layer,
+            _dateFormat = layui.dateFormat, _pager = layui.laypage, _form = layui.form;
+        // fetch data
+        var _nagvigationListContainer = $('#navigationListContainer');
+        var _navigationList = {};
+        var time1 = $('#time1').value;
+        var time2 = $('#time2').value;
+        function getNavigationList(obj, first) {
+            if (first) return;
+            _nagvigationListContainer.html('');
+            var pageNo = obj.curr;
+            _loading.showLoading();
+            $.get('/api/spider/list', {pageNo: pageNo - 1, time1: time1, time2: time2}, function (result) {
+                _loading.hideLoading();
+                $('.layui-table').show();
+                var pageSize = 20, totalCount = 0;
+                if (result.code == 0) {
+                    pageNo = result.content.pageNo + 1;
+                    pageSize = result.content.pageSize;
+                    totalCount = result.content.navigationCount;
+                    $.each(result.content.navigationList, function (idx, navigation) {
+                        var tr = $('<tr class="navigation_info_row" data-nid="' + navigation.id + '"></tr>');
+                        tr.append('<td>' + (idx + 1) + '</td>');
+                        tr.append('<td>' + navigation.name + '</td>');
+                        tr.append('<td>' + navigation.director + '</td>');
+                        tr.append('<td>' + navigation.write + '</td>');
+                        tr.append('<td>' + navigation.type + '</td>');
+                        tr.append('<td>' + navigation.date + '</td>');
+                        tr.append('<td>' + navigation.introdduction + '</td>');
+                        tr.append('<td>' + navigation.movieurl + '</td>');
 
-                            pageNo = result.content.pageNo + 1;
-                            pageSize = result.content.pageSize;
-                            totalCount = result.content.navigationCount;
-                            $.each(result.content.navigationList, function (idx, navigation) {
-                                var tr = $('<tr class="navigation_info_row" data-nid="' + navigation.id + '"></tr>');
-                                tr.append('<td>' + (idx + 1) + '</td>');
-                                tr.append('<td>' + navigation.name + '</td>');
-                                tr.append('<td>' + navigation.director + '</td>');
-                                tr.append('<td>' + navigation.write + '</td>');
-                                tr.append('<td>' + navigation.type + '</td>');
-                                tr.append('<td>' + navigation.date + '</td>');
-                                tr.append('<td>' + navigation.introdduction + '</td>');
-                                tr.append('<td>' + navigation.movieurl + '</td>');
-                                // tr.append('<td><div class="layui-btn-group" data-nid="' + navigation.mid + '">'
-                                //     +   '<button class="layui-btn layui-btn-primary layui-btn-small btn_delete_navigation" title="删除">'
-                                //     +       '<i class="layui-icon">&#xe640;</i>'
-                                //     +   '</button>'
-                                //     + '</div></td>');
-
-                                _nagvigationListContainer.append(tr);
-                                _navigationList[navigation.id] = navigation;
-                            });
-                        } else {
-                            _layer.msg(result.msg ? result.msg : '获取电影数据失败');
-                        }
-                        !first && setTimeout(function () {
-                            _pager.render({elem: 'pagination', count: totalCount, limit: pageSize, curr: pageNo, jump: getNavigationList});
-                        }, 0);
+                        _nagvigationListContainer.append(tr);
+                        _navigationList[navigation.id] = navigation;
                     });
+                } else {
+                    _layer.msg(result.msg ? result.msg : '获取电影数据失败');
                 }
+                !first && setTimeout(function () {
+                    _pager.render({
+                        elem: 'pagination',
+                        count: totalCount,
+                        limit: pageSize,
+                        curr: pageNo,
+                        jump: getNavigationList
+                    });
+                }, 0);
+            });
+        }
 
         // // add or edit navigation
         // var _btnAddNavigation = $('#btn_add_navigation');
@@ -110,6 +110,7 @@
             _btnAddNavigation.removeClass('layui-btn-disabled');
             _dialogIdx = false;
         }
+
         // edit navigation
         var _bodyEle = $('body');
         _bodyEle.on('click', '.btn_edit_navigation', function () {
@@ -161,54 +162,4 @@
         ],
         navigationListFunc
     );
-} ());
-
-
-function navigationListFunc() {
-    var _utils = layui.commonUtils, _loading = layui.commonLoading, $ = layui.jquery, _layer = layui.layer,
-        _dateFormat = layui.dateFormat, _pager = layui.laypage, _form = layui.form;
-    // fetch data
-    var _nagvigationListContainer = $('#navigationListContainer');
-    var _time1 = $('#time1').value;
-    var _time2 = $('#time2').value;
-    var _navigationList = {};
-    function getNavigationList(obj, first) {
-        if (first) return;
-        _nagvigationListContainer.html('');
-        var pageNo = obj.curr;
-        _loading.showLoading();
-        $.get('/api/spider/list', {pageNo: pageNo - 1, time1:_time1, time2:_time2}, function (result) {
-            _loading.hideLoading();
-            $('.layui-table').show();
-            var pageSize = 20, totalCount = 0;
-            if (result.code == 0) {
-
-                pageNo = result.content.pageNo + 1;
-                pageSize = result.content.pageSize;
-                totalCount = result.content.navigationCount;
-                $.each(result.content.navigationList, function (idx, navigation) {
-                    var tr = $('<tr class="navigation_info_row" data-nid="' + navigation.id + '"></tr>');
-                    tr.append('<td>' + (idx + 1) + '</td>');
-                    tr.append('<td>' + navigation.name + '</td>');
-                    tr.append('<td>' + navigation.director + '</td>');
-                    tr.append('<td>' + navigation.write + '</td>');
-                    tr.append('<td>' + navigation.type + '</td>');
-                    tr.append('<td>' + navigation.date + '</td>');
-                    tr.append('<td>' + navigation.introdduction + '</td>');
-                    tr.append('<td>' + navigation.movieurl + '</td>');
-                    // tr.append('<td><div class="layui-btn-group" data-nid="' + navigation.mid + '">'
-                    //     +   '<button class="layui-btn layui-btn-primary layui-btn-small btn_delete_navigation" title="删除">'
-                    //     +       '<i class="layui-icon">&#xe640;</i>'
-                    //     +   '</button>'
-                    //     + '</div></td>');
-
-                    _nagvigationListContainer.append(tr);
-                    _navigationList[navigation.id] = navigation;
-                });
-            } else {
-                _layer.msg(result.msg ? result.msg : '获取电影数据失败');
-            }
-            !first && setTimeout(function () {
-                _pager.render({elem: 'pagination', count: totalCount, limit: pageSize, curr: pageNo, jump: getNavigationList});
-            }, 0);
-        });}}
+}());
