@@ -56,7 +56,7 @@ layui.define(['jquery', 'layer', 'element', 'commonUtils', 'form', 'commonLoadin
         if (!footer) return;
         footer.html(
             '<div class="page_footer_container">'
-            + '<span>Copyright xxxxxxxxxxxxxxxxxxxxxxx</span>'
+            + '<span>Powered by @好人1生平胸</span>'
             +'</div>'
         );
         _domElement.init();

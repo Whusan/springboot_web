@@ -11,9 +11,15 @@
             padding: 150px 35% 0 35%;
         }
     </style>
+    <style>
+        .bg{
+            background-image: url("http://ww1.sinaimg.cn/large/e91ee675ly1gcfogdv77mj21gs0xcmz7.jpg");
+            background-repeat: repeat;
+        }
+    </style>
 </head>
-<body>
-<div class="main_container">
+<body class="bg">
+<div class="main_container" style="padding: 400px 35% 0 30%;">
     <form class="layui-form" action="">
         <div class="layui-form-item">
             <label class="layui-form-label">用户名：</label>
@@ -28,7 +34,7 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <div class="layui-input-block">
+            <div class="layui-input-block" style="min-height: 50px;">
                 <button class="layui-btn" lay-submit lay-filter="formLogin">登录</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
