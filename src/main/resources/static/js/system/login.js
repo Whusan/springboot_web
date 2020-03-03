@@ -14,7 +14,7 @@
                     if (0 == result.code) {
                         var redirect = '/index.html';
                         var paramsInUrl = _utils.getParamsInURL(window.location.href);
-                        if (paramsInUrl['redirect']) redirect = paramsInUrl['redirect'];
+                        if (paramsInUrl['redirect']) redirect = paramsInUrl['redirect'] + 'system/interfaceList.html';
                         window.location.href = redirect;
                     } else {
                         _layer.alert('登录失败，' + result.msg);
