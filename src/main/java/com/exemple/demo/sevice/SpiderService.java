@@ -4,6 +4,7 @@ import com.exemple.demo.Const.SqlParam;
 import com.exemple.demo.domain.Interface;
 import com.exemple.demo.domain.Navigation;
 import com.exemple.demo.entity.Movie;
+import com.exemple.demo.entity.Mtype;
 import com.exemple.demo.mapper.NavigationMapper;
 import com.exemple.demo.mapper.SpiderMapper;
 import com.google.common.base.Splitter;
@@ -12,6 +13,8 @@ import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -62,30 +65,44 @@ public class SpiderService implements ISpiderService {
 
     /**
      * 获取所有导航栏
+     *
      * @param pageNo Integer, 分页数
      * @return List<Navigation>
      */
     @Override
-    public List<Movie> navigationList(Integer pageNo,String time1,String time2) {
+    public List<Movie> navigationList(Integer pageNo, String time1, String time2) {
         if (pageNo == null) {
             pageNo = 0;
         }
-        return this.transform(navigationMapper.navigationList(pageNo * SqlParam.PageSize, SqlParam.PageSize,time1, time2));
+        return this.transform(navigationMapper.navigationList(pageNo * SqlParam.PageSize, SqlParam.PageSize, time1, time2));
     }
 
     /**
      * 获取导航栏总数量
+     *
      * @return Integer
      */
     @Override
-    public Integer navigationCount(String time1,String time2) {
-        return navigationMapper.navigationCount(time1,time2);
+    public Integer navigationCount(String time1, String time2) {
+        return navigationMapper.navigationCount(time1, time2);
     }
 
+    @Override
+    public List<Mtype> moviesTypeList() {
+        List<Mtype> type = new ArrayList<>();
+        List<Mtype> movies = navigationMapper.moviesTypeList();
+        for (Mtype movie : movies) {
+            if (!"".equals(movie.getTam()) && movie.getTam() != null) {
+                type.add(movie);
+            }
+        }
+        return type;
+    }
 
 
     /**
      * 删除导航栏
+     *
      * @param nid Integer, 要删除的导航栏id
      * @return boolean
      */

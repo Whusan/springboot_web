@@ -1,7 +1,7 @@
 package com.exemple.demo.mapper;
 
 import com.exemple.demo.entity.Movie;
-import com.exemple.demo.entity.Navigation;
+import com.exemple.demo.entity.Mtype;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -11,13 +11,17 @@ import java.util.List;
  */
 public interface SpiderMapper {
     @Select("SELECT * from movie")
-    List<Navigation> allNavigations();
+    List<Movie> allNavigations();
+
+    @Select("SELECT a.type as tam,count(a.type) as nums from (select substring_index(substring_index(a.type,' ',b.help_topic_id+1),' ',-1) type " +
+            "from movie a  join  mysql.help_topic b  on b.help_topic_id < (length(a.type) - length(replace(a.type,' ',''))+1)) as a GROUP BY a.type")
+    List<Mtype> moviesTypeList();
 
     @Select("SELECT * from movie where date>#{time1} and date <#{time2} order by date LIMIT #{offset}, #{pageSize}")
     List<Movie> navigationList(@Param("offset") Integer offset, @Param("pageSize") Integer pageSize, @Param("time1") String time1, @Param("time2") String time2);
 
     @Select("SELECT COUNT(name) FROM movie where date>#{time1} and date <#{time2}")
-    Integer navigationCount(@Param("time1") String time1,@Param("time2") String time2);
+    Integer navigationCount(@Param("time1") String time1, @Param("time2") String time2);
 
     @Select("SELECT n.id, n.`name`, n.`status`, n.ctime createTime, n.order_num orderNumber, GROUP_CONCAT(i.id) interfaceIds " +
             "FROM navigation n " +
@@ -25,7 +29,7 @@ public interface SpiderMapper {
             "WHERE n.status = 0 " +
             "GROUP BY n.id " +
             "ORDER BY n.order_num DESC, n.id, i.order_num DESC, i.id")
-    List<Navigation> navigationsEnabled();
+    List<Movie> navigationsEnabled();
 
     @Select("SELECT n.id, n.`name`, n.`status`, n.ctime createTime, n.order_num orderNumber, GROUP_CONCAT(i.id) interfaceIds " +
             "FROM navigation n " +
@@ -35,7 +39,7 @@ public interface SpiderMapper {
             "WHERE n.status = 0 " +
             "GROUP BY n.id " +
             "ORDER BY n.order_num DESC, n.id, i.order_num DESC, i.id")
-    List<Navigation> navigationsShowInView(@Param("uid") Integer uid);
+    List<Movie> navigationsShowInView(@Param("uid") Integer uid);
 
 
     @Delete("DELETE FROM movie WHERE id = #{nid}")
